@@ -50,14 +50,13 @@ func UserLogin(c *fiber.Ctx) error {
 		return err
 	}
 
-	fmt.Println(payload.Email, payload.Password, payload.Username)
+	// fmt.Println(payload.Email, payload.Password, payload.Username)
 
 	queries := model.New(database.DB)
 
-	user, err := queries.CheckLoginUser(c.Context(), model.CheckLoginUserParams{
-		Username: payload.Username,
-		Email:    payload.Email,
-	})
+	user, err := queries.CheckLoginUser(c.Context(), payload.Username)
+
+	fmt.Println(user)
 
 	if err != nil {
 		return err

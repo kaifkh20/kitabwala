@@ -11,14 +11,8 @@ import (
 
 const checkLoginUser = `-- name: CheckLoginUser :one
 SELECT username,email,password from users
-WHERE username = $1 and email = $2 and password = $3
+WHERE username = $1
 `
-
-type CheckLoginUserParams struct {
-	Username string
-	Email    string
-	Password string
-}
 
 type CheckLoginUserRow struct {
 	Username string
@@ -26,8 +20,8 @@ type CheckLoginUserRow struct {
 	Password string
 }
 
-func (q *Queries) CheckLoginUser(ctx context.Context, arg CheckLoginUserParams) (CheckLoginUserRow, error) {
-	row := q.db.QueryRow(ctx, checkLoginUser, arg.Username, arg.Email, arg.Password)
+func (q *Queries) CheckLoginUser(ctx context.Context, username string) (CheckLoginUserRow, error) {
+	row := q.db.QueryRow(ctx, checkLoginUser, username)
 	var i CheckLoginUserRow
 	err := row.Scan(&i.Username, &i.Email, &i.Password)
 	return i, err

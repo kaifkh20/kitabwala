@@ -7,7 +7,7 @@ WHERE id = $1;
 
 -- name: CheckLoginUser :one
 SELECT username,email,password from users
-WHERE username = $1 and email = $2;
+WHERE username = $1 ;
 
 
 -- name: CreateUsers :one 
