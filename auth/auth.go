@@ -27,3 +27,19 @@ func GenerateToken(username, email string) (string, error) {
 	}
 	return t, nil
 }
+
+func AuthorizeToken(tokenString string) (*jwt.Token, error) {
+	claims := jwt.MapClaims{}
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte("secret"), nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, jwt.ValidationError{}
+	}
+
+	return token, nil
+}

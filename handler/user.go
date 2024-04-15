@@ -1,23 +1,25 @@
 package handler
 
 import (
-	"fmt"
 	"kw/auth"
 	"kw/database"
+	"kw/middleware"
 	"kw/model"
-	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 func UserGet(c *fiber.Ctx) error {
-	// token := c.Cookies("user_token")
 
-	id, _ := strconv.ParseInt(c.Params("id"), 10, 64)
+	email, err := middleware.Protected(c)
+
+	if err != nil {
+		return err
+	}
 
 	queries := model.New(database.DB)
 
-	user, err := queries.GetUser(c.Context(), id)
+	user, err := queries.GetUser(c.Context(), email)
 
 	if err != nil {
 		return err
@@ -56,7 +58,7 @@ func UserLogin(c *fiber.Ctx) error {
 
 	user, err := queries.CheckLoginUser(c.Context(), payload.Username)
 
-	fmt.Println(user)
+	// fmt.Println(user)
 
 	if err != nil {
 		return err
