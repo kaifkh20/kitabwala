@@ -9,6 +9,43 @@ import (
 	"context"
 )
 
+const addBooks = `-- name: AddBooks :one
+INSERT into books(
+    name,price,description,sellerName,condition
+)
+VALUES(
+    $1,$2,$3,$4,$5
+)RETURNING id, name, price, description, sellername, condition
+`
+
+type AddBooksParams struct {
+	Name        string
+	Price       int32
+	Description string
+	Sellername  string
+	Condition   bool
+}
+
+func (q *Queries) AddBooks(ctx context.Context, arg AddBooksParams) (Book, error) {
+	row := q.db.QueryRow(ctx, addBooks,
+		arg.Name,
+		arg.Price,
+		arg.Description,
+		arg.Sellername,
+		arg.Condition,
+	)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Price,
+		&i.Description,
+		&i.Sellername,
+		&i.Condition,
+	)
+	return i, err
+}
+
 const checkLoginUser = `-- name: CheckLoginUser :one
 SELECT username,email,password from users
 WHERE username = $1

@@ -18,3 +18,12 @@ VALUES(
         $1, $2, $3, $4
     )
 RETURNING *;
+
+
+-- name: AddBooks :one 
+INSERT into books(
+    name,price,description,sellerName,condition
+)
+VALUES(
+    $1,$2,$3,$4,$5
+)RETURNING *;
