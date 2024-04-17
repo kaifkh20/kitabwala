@@ -4,6 +4,10 @@
 
 package model
 
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
 type Book struct {
 	ID          int64
 	Name        string
@@ -11,6 +15,12 @@ type Book struct {
 	Description string
 	Sellername  string
 	Condition   bool
+}
+
+type Order struct {
+	ID     int64
+	Userid pgtype.Int8
+	Bookid pgtype.Int8
 }
 
 type User struct {

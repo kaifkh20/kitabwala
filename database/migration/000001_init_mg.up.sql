@@ -20,4 +20,13 @@ CREATE TABLE IF NOT EXISTS books(
     CONSTRAINT fk_seller
         FOREIGN KEY(sellerName)
             REFERENCES users(email)
-)
+);
+
+CREATE TABLE IF NOT EXISTS orders(
+    id BIGSERIAL,
+    userId BIGSERIAL,
+    bookId BIGSERIAL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(userId) REFERENCES users(id),
+    FOREIGN KEY(bookId) REFERENCES books(id)
+);

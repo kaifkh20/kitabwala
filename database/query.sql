@@ -30,3 +30,12 @@ VALUES(
 
 -- name: GetBooks :many 
 SELECT * from books;
+
+-- name: BuyBook :one
+INSERT into orders(
+    userId,bookId
+)VALUES($1,$2)RETURNING *;
+
+-- name: GetOrders :many
+
+SELECT id,bookId from orders WHERE(userId = $1);

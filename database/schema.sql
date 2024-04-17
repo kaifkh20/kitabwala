@@ -19,4 +19,13 @@ CREATE TABLE books(
     CONSTRAINT fk_seller
         FOREIGN KEY(sellerName)
             REFERENCES users(email)
-)
+);
+
+CREATE TABLE orders(
+    id BIGSERIAL,
+    userId BIGSERIAL,
+    bookId BIGSERIAL,
+    PRIMARY KEY(id),
+    FOREIGN KEY(userId) REFERENCES users(id),
+    FOREIGN KEY(bookId) REFERENCES books(id)
+);

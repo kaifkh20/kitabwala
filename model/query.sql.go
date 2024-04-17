@@ -7,6 +7,8 @@ package model
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addBooks = `-- name: AddBooks :one
@@ -43,6 +45,24 @@ func (q *Queries) AddBooks(ctx context.Context, arg AddBooksParams) (Book, error
 		&i.Sellername,
 		&i.Condition,
 	)
+	return i, err
+}
+
+const buyBook = `-- name: BuyBook :one
+INSERT into orders(
+    userId,bookId
+)VALUES($1,$2)RETURNING id, userid, bookid
+`
+
+type BuyBookParams struct {
+	Userid pgtype.Int8
+	Bookid pgtype.Int8
+}
+
+func (q *Queries) BuyBook(ctx context.Context, arg BuyBookParams) (Order, error) {
+	row := q.db.QueryRow(ctx, buyBook, arg.Userid, arg.Bookid)
+	var i Order
+	err := row.Scan(&i.ID, &i.Userid, &i.Bookid)
 	return i, err
 }
 
@@ -120,6 +140,36 @@ func (q *Queries) GetBooks(ctx context.Context) ([]Book, error) {
 			&i.Sellername,
 			&i.Condition,
 		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getOrders = `-- name: GetOrders :many
+
+SELECT id,bookId from orders WHERE(userId = $1)
+`
+
+type GetOrdersRow struct {
+	ID     int64
+	Bookid pgtype.Int8
+}
+
+func (q *Queries) GetOrders(ctx context.Context, userid pgtype.Int8) ([]GetOrdersRow, error) {
+	rows, err := q.db.Query(ctx, getOrders, userid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetOrdersRow
+	for rows.Next() {
+		var i GetOrdersRow
+		if err := rows.Scan(&i.ID, &i.Bookid); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

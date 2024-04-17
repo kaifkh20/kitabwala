@@ -7,6 +7,7 @@ import (
 	"kw/model"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func UserGet(c *fiber.Ctx) error {
@@ -127,4 +128,28 @@ func UserCreate(c *fiber.Ctx) error {
 
 	return c.JSON(insertedRow)
 
+}
+
+func GetOrders(c *fiber.Ctx) error {
+	email, err := middleware.Protected(c)
+
+	if err != nil {
+		return err
+	}
+
+	queries := model.New(database.DB)
+
+	user, err := queries.GetUser(c.Context(), email)
+
+	if err != nil {
+		return err
+	}
+
+	orders, err := queries.GetOrders(c.Context(), pgtype.Int8{Int64: user.ID, Valid: true})
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(orders)
 }

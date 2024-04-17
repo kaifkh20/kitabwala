@@ -6,6 +6,7 @@ import (
 	"kw/model"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func AddBook(c *fiber.Ctx) error {
@@ -62,3 +63,47 @@ func GetAllBook(c *fiber.Ctx) error {
 	return c.JSON(books)
 
 }
+
+func BuyBook(c *fiber.Ctx) error {
+
+	email, err := middleware.Protected(c)
+
+	if err != nil {
+		return err
+	}
+
+	queries := model.New(database.DB)
+
+	user, err := queries.GetUser(c.Context(), email)
+
+	if err != nil {
+		return err
+	}
+
+	type PayloadOrder struct {
+		UserId pgtype.Int8 `json:"userId"`
+		BookId pgtype.Int8 `json:"orderId"`
+	}
+
+	payload := new(PayloadOrder)
+	err = c.BodyParser(&payload)
+
+	if err != nil {
+		return err
+	}
+
+	payload.UserId = pgtype.Int8{Int64: user.ID, Valid: true}
+
+	book, err := queries.BuyBook(c.Context(), model.BuyBookParams{
+		Userid: payload.UserId,
+		Bookid: payload.BookId,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(book)
+
+}
+
