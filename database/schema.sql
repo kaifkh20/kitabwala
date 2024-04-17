@@ -18,5 +18,5 @@ CREATE TABLE books(
     PRIMARY KEY(id),
     CONSTRAINT fk_seller
         FOREIGN KEY(sellerName)
-            REFERENCES users(username)
+            REFERENCES users(email)
 )

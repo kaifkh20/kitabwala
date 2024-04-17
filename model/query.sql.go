@@ -99,6 +99,37 @@ func (q *Queries) CreateUsers(ctx context.Context, arg CreateUsersParams) (User,
 	return i, err
 }
 
+const getBooks = `-- name: GetBooks :many
+SELECT id, name, price, description, sellername, condition from books
+`
+
+func (q *Queries) GetBooks(ctx context.Context) ([]Book, error) {
+	rows, err := q.db.Query(ctx, getBooks)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Book
+	for rows.Next() {
+		var i Book
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Price,
+			&i.Description,
+			&i.Sellername,
+			&i.Condition,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUser = `-- name: GetUser :one
 SELECT id, name, username, email, password from users 
 WHERE email = $1
