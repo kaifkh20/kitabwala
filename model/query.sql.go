@@ -181,19 +181,25 @@ func (q *Queries) GetOrders(ctx context.Context, userid pgtype.Int8) ([]GetOrder
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, name, username, email, password from users 
+SELECT ID,username,name,email from users 
 WHERE email = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
+type GetUserRow struct {
+	ID       int64
+	Username string
+	Name     string
+	Email    string
+}
+
+func (q *Queries) GetUser(ctx context.Context, email string) (GetUserRow, error) {
 	row := q.db.QueryRow(ctx, getUser, email)
-	var i User
+	var i GetUserRow
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
 		&i.Username,
+		&i.Name,
 		&i.Email,
-		&i.Password,
 	)
 	return i, err
 }

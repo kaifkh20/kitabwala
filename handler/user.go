@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"kw/auth"
 	"kw/database"
 	"kw/middleware"
@@ -25,6 +26,8 @@ func UserGet(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("Working")
 
 	return c.JSON(user)
 

@@ -2,7 +2,7 @@
 SELECT * from users;
 
 -- name: GetUser :one
-SELECT * from users 
+SELECT ID,username,name,email from users 
 WHERE email = $1;
 
 -- name: CheckLoginUser :one
