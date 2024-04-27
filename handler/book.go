@@ -4,6 +4,7 @@ import (
 	"kw/database"
 	"kw/middleware"
 	"kw/model"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -54,7 +55,24 @@ func AddBook(c *fiber.Ctx) error {
 func GetAllBook(c *fiber.Ctx) error {
 	queries := model.New(database.DB)
 
-	books, err := queries.GetBooks(c.Context())
+	limitString := c.Params("limit", "10")
+
+	limit, err := strconv.ParseInt(limitString, 10, 32)
+
+	if err != nil {
+		return err
+	}
+
+	offset, err := strconv.ParseInt(c.Params("offset", "0"), 10, 32)
+
+	if err != nil {
+		return err
+	}
+
+	books, err := queries.GetBooks(c.Context(), model.GetBooksParams{
+		Limit:  int32(limit),
+		Offset: int32(offset),
+	})
 
 	if err != nil {
 		return err
@@ -106,4 +124,3 @@ func BuyBook(c *fiber.Ctx) error {
 	return c.JSON(book)
 
 }
-

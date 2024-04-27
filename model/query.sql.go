@@ -121,10 +121,17 @@ func (q *Queries) CreateUsers(ctx context.Context, arg CreateUsersParams) (User,
 
 const getBooks = `-- name: GetBooks :many
 SELECT id, name, price, description, sellername, condition from books
+LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) GetBooks(ctx context.Context) ([]Book, error) {
-	rows, err := q.db.Query(ctx, getBooks)
+type GetBooksParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetBooks(ctx context.Context, arg GetBooksParams) ([]Book, error) {
+	rows, err := q.db.Query(ctx, getBooks, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

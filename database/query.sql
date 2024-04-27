@@ -29,7 +29,9 @@ VALUES(
 )RETURNING *;
 
 -- name: GetBooks :many 
-SELECT * from books;
+SELECT * from books
+LIMIT $1
+OFFSET $2;
 
 -- name: BuyBook :one
 INSERT into orders(
